@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Menu</title>
+    <style>
+      /* Gaya Dasar dan Tata Letak */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa; /* Latar belakang lembut */
+        margin: 0;
+        padding: 20px;
+        color: #343a40;
+      }
+
+      .dashboard-header {
+        background-color: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+
+      #greeting {
+        font-size: 2.2em;
+        font-weight: 700;
+        color: #007bff; /* Warna biru menarik */
+        margin: 0;
+      }
+
+      .user-info {
+        font-size: 1em;
+        color: #6c757d;
+      }
+
+      /* Gaya Menu Navigasi */
+      .main-menu {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(250px, 1fr)
+        ); /* Layout responsif */
+        gap: 20px;
+      }
+
+      .menu-item {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+        text-align: center;
+        text-decoration: none;
+        color: #343a40;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .menu-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      .menu-icon {
+        font-size: 3em;
+        margin-bottom: 10px;
+      }
+
+      .menu-title {
+        font-size: 1.2em;
+        font-weight: 600;
+      }
+
+      /* Gaya Sub-Menu (Laporan) */
+      .submenu-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .submenu-item {
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #e9f7ff; /* Latar belakang submenu */
+        font-size: 0.9em;
+        font-weight: 500;
+        text-decoration: none;
+        color: #007bff;
+        transition: background-color 0.3s;
+      }
+
+      .submenu-item:hover {
+        background-color: #cce5ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-header">
+      <p id="greeting">Loading...</p>
+      <p class="user-info">Selamat datang kembali, Manajer Logistik!</p>
+    </div>
+
+    <div class="main-menu">
+      <a href="#informasi" class="menu-item">
+        <span class="menu-icon">📚</span>
+        <span class="menu-title">Informasi Bahan Ajar</span>
+      </a>
+
+      <a href="#tracking" class="menu-item">
+        <span class="menu-icon">🚚</span>
+        <span class="menu-title">Tracking Pengiriman</span>
+      </a>
+
+      <div class="menu-item">
+        <span class="menu-icon">📊</span>
+        <span class="menu-title">Laporan</span>
+        <div class="submenu-container">
+          <a href="#monitoring" class="submenu-item">
+            Monitoring Progress DO Bahan Ajar
+          </a>
+          <a href="#rekap" class="submenu-item"> Rekap Bahan Ajar </a>
+        </div>
+      </div>
+
+      <a href="#histori" class="menu-item">
+        <span class="menu-icon">📅</span>
+        <span class="menu-title">Histori Transaksi Bahan Ajar</span>
+      </a>
+    </div>
+
+    <script>
+      // Logika JavaScript untuk Greeting Berdasarkan Waktu Lokal
+      function updateGreeting() {
+        const now = new Date();
+        const hour = now.getHours();
+        let greetingText;
+
+        if (hour >= 4 && hour < 11) {
+          greetingText = "Selamat Pagi! ☕";
+        } else if (hour >= 11 && hour < 15) {
+          greetingText = "Selamat Siang! ☀️";
+        } else if (hour >= 15 && hour < 18) {
+          greetingText = "Selamat Sore! 🌅";
+        } else {
+          greetingText = "Selamat Malam! 🌙";
+        }
+
+        document.getElementById("greeting").textContent = greetingText;
+      }
+
+      // Panggil fungsi saat halaman dimuat
+      updateGreeting();
+    </script>
+  </body>
+</html>

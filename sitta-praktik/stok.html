@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Informasi Stok Bahan Ajar</title>
+
+    <script src="data.js"></script>
+
+    <style>
+      /* --- GAYA UMUM --- */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7f6;
+        margin: 0;
+        padding: 30px;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        color: #007bff;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 10px;
+        margin-bottom: 25px;
+        font-weight: 600;
+      }
+
+      /* --- GAYA TABEL --- */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+      }
+
+      .data-table th,
+      .data-table td {
+        border: 1px solid #dee2e6;
+        padding: 12px 15px;
+        text-align: left;
+      }
+
+      .data-table th {
+        background-color: #007bff;
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .data-table tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+
+      .data-table td {
+        font-size: 0.95em;
+      }
+
+      /* Pewarnaan Status */
+      .status-badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-weight: bold;
+        display: inline-block;
+      }
+
+      .status-Aman {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .status-Waspada {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+
+      .status-Kritis {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      /* --- GAYA FORM TAMBAH BARIS --- */
+      .add-row-section {
+        padding: 20px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        background-color: #fcfcfc;
+      }
+
+      .form-inputs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .add-row-section input,
+      .add-row-section select {
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        flex: 1 1 180px;
+      }
+
+      .add-row-section button {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .add-row-section button:hover {
+        background-color: #1e7e34;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>📚 Informasi Stok Bahan Ajar</h2>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Kode Lokasi</th>
+            <th>Kode Barang</th>
+            <th>Nama Bahan Ajar</th>
+            <th>Jenis</th>
+            <th>Edisi</th>
+            <th>Stok Gudang</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="stockTableBody"></tbody>
+      </table>
+
+      <div class="add-row-section">
+        <h3>+ Tambahkan Stok Baru</h3>
+        <div class="form-inputs">
+          <input
+            type="text"
+            id="inputKodeLokasi"
+            placeholder="Kode Lokasi (e.g., 0JKT01)"
+            required
+          />
+          <input
+            type="text"
+            id="inputKodeBarang"
+            placeholder="Kode Barang (e.g., ASIP4301)"
+            required
+          />
+          <input
+            type="text"
+            id="inputNamaBarang"
+            placeholder="Nama Bahan Ajar"
+            required
+          />
+          <select id="inputJenisBarang">
+            <option value="BMP">BMP</option>
+            <option value="Non-BMP">Non-BMP</option>
+          </select>
+          <input type="text" id="inputEdisi" placeholder="Edisi" required />
+          <input
+            type="number"
+            id="inputStok"
+            placeholder="Stok Gudang"
+            required
+          />
+          <input
+            type="number"
+            id="inputStokMinimal"
+            placeholder="Stok Minimal"
+            required
+          />
+        </div>
+        <button onclick="tambahBarisStok()">Tambahkan Data Stok</button>
+      </div>
+    </div>
+
+    <script>
+      // JavaScript DOM Manipulation
+
+      // Fungsi untuk menentukan status berdasarkan stok
+      function getStatus(stok, stokMinimal) {
+        if (stok >= stokMinimal) {
+          return "Aman";
+        } else if (stok < stokMinimal && stok >= stokMinimal * 0.5) {
+          return "Waspada";
+        } else {
+          return "Kritis";
+        }
+      }
+
+      // 1. FUNGSI UNTUK MERENDER DATA DARI dataBahanAjar KE TABEL
+      function renderTable() {
+        const tbody = document.getElementById("stockTableBody");
+        tbody.innerHTML = ""; // Bersihkan tabel
+
+        // Pastikan dataBahanAjar sudah terdefinisi (dimuat dari data.js)
+        if (typeof dataBahanAjar === "undefined") {
+          console.error(
+            "Variabel dataBahanAjar tidak ditemukan. Pastikan data.js sudah dimuat."
+          );
+          return;
+        }
+
+        dataBahanAjar.forEach((item) => {
+          const row = tbody.insertRow();
+
+          // Cek status, menggunakan properti stokMinimal yang sudah ditambahkan
+          const stokMinimal = item.stokMinimal || 0;
+          const status = getStatus(item.stok, stokMinimal);
+          const statusClass = `status-${status}`;
+
+          row.innerHTML = `
+                    <td>${item.kodeLokasi}</td>
+                    <td>${item.kodeBarang}</td>
+                    <td>${item.namaBarang}</td>
+                    <td>${item.jenisBarang}</td>
+                    <td>${item.edisi}</td>
+                    <td>${item.stok}</td>
+                    <td>
+                        <span class="status-badge ${statusClass}">${status}</span>
+                    </td>
+                `;
+        });
+      }
+
+      // 2. FUNGSI UNTUK MENAMBAHKAN BARIS STOK BARU (DOM)
+      function tambahBarisStok() {
+        const kodeLokasi = document
+          .getElementById("inputKodeLokasi")
+          .value.toUpperCase();
+        const kodeBarang = document
+          .getElementById("inputKodeBarang")
+          .value.toUpperCase();
+        const namaBarang = document.getElementById("inputNamaBarang").value;
+        const jenisBarang = document.getElementById("inputJenisBarang").value;
+        const edisi = document.getElementById("inputEdisi").value;
+        const stok = parseInt(document.getElementById("inputStok").value);
+        const stokMinimal = parseInt(
+          document.getElementById("inputStokMinimal").value
+        );
+
+        // Validasi Input
+        if (
+          !kodeLokasi ||
+          !kodeBarang ||
+          !namaBarang ||
+          !edisi ||
+          isNaN(stok) ||
+          isNaN(stokMinimal) ||
+          stok < 0 ||
+          stokMinimal < 0
+        ) {
+          alert(
+            "Semua input harus diisi dengan benar dan stok harus berupa angka positif."
+          );
+          return;
+        }
+
+        // Buat objek data baru
+        const newItem = {
+          kodeLokasi: kodeLokasi,
+          kodeBarang: kodeBarang,
+          namaBarang: namaBarang,
+          jenisBarang: jenisBarang,
+          edisi: edisi,
+          stok: stok,
+          stokMinimal: stokMinimal,
+          cover: "img/default_cover.jpg",
+        };
+
+        // Tambahkan data baru ke array dataBahanAjar
+        dataBahanAjar.push(newItem);
+
+        // Render ulang tabel untuk menampilkan baris baru
+        renderTable();
+
+        // Bersihkan input
+        document.getElementById("inputKodeLokasi").value = "";
+        document.getElementById("inputKodeBarang").value = "";
+        document.getElementById("inputNamaBarang").value = "";
+        document.getElementById("inputEdisi").value = "";
+        document.getElementById("inputStok").value = "";
+        document.getElementById("inputStokMinimal").value = "";
+
+        alert(
+          `Stok ${namaBarang} (${kodeBarang}) berhasil ditambahkan ke daftar!`
+        );
+      }
+
+      // Panggil fungsi render saat halaman dimuat
+      window.onload = renderTable;
+    </script>
+  </body>
+</html>
