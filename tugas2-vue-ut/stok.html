@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Stok Bahan Ajar - SITTA</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <nav>
+        <a href="index.html">Home</a> | <a href="stok.html">Stok</a> |
+        <a href="tracking.html">Tracking</a>
+      </nav>
+
+      <h1>📦 Data Stok Bahan Ajar</h1>
+
+      <div
+        style="
+          background: #ecf0f1;
+          padding: 15px;
+          border-radius: 5px;
+          margin-bottom: 20px;
+        "
+      >
+        <h3>Filter Data</h3>
+        <div class="form-group">
+          <label>Pilih UPBJJ:</label>
+          <select v-model="selectedUpbjj">
+            <option value="">-- Semua UPBJJ --</option>
+            <option v-for="kota in upbjjList" :value="kota">{{ kota }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Pilih Kategori:</label>
+          <select v-model="selectedKategori">
+            <option value="">-- Semua Kategori --</option>
+            <option v-for="kat in kategoriList" :value="kat">{{ kat }}</option>
+          </select>
+        </div>
+
+        <p>Menampilkan: <strong>{{ filteredStok.length }}</strong> buku.</p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Judul Buku</th>
+            <th>Kategori</th>
+            <th>UPBJJ</th>
+            <th>Stok</th>
+            <th>Status</th>
+            <th>Catatan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in filteredStok" :key="item.kode">
+            <td>{{ item.kode }}</td>
+            <td><strong>{{ item.judul }}</strong></td>
+            <td>{{ item.kategori }}</td>
+            <td>{{ item.upbjj }}</td>
+            <td style="text-align: center">{{ item.qty }}</td>
+
+            <td>
+              <span class="badge" :class="getStatusClass(item)">
+                {{ getStatusText(item) }}
+              </span>
+            </td>
+
+            <td v-html="item.catatanHTML"></td>
+          </tr>
+
+          <tr v-if="filteredStok.length === 0">
+            <td colspan="7" style="text-align: center">
+              Tidak ada data ditemukan.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert" v-show="pesanSistem">
+        <strong>System Log:</strong> {{ pesanSistem }}
+      </div>
+    </div>
+
+    <script src="js/stok-app.js"></script>
+  </body>
+</html>

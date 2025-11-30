@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tracking DO - SITTA</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <nav>
+        <a href="index.html">Home</a> | <a href="stok.html">Stok</a> |
+        <a href="tracking.html">Tracking</a>
+      </nav>
+
+      <h1>🚚 Lacak Pengiriman Bahan Ajar</h1>
+
+      <div class="form-group" style="max-width: 400px; margin: 0 auto">
+        <label>Masukkan Nomor DO / Resi:</label>
+        <input
+          type="text"
+          v-model="inputResi"
+          placeholder="Contoh: DO2025-0001"
+          v-on:keyup.enter="cariData"
+        />
+        <p style="font-size: 0.8em; color: #7f8c8d">{{ validasiPesan }}</p>
+
+        <button
+          @click="cariData"
+          style="
+            width: 100%;
+            padding: 10px;
+            background: #34495e;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+          "
+        >
+          Cari Paket
+        </button>
+      </div>
+
+      <hr />
+
+      <div
+        v-if="!sudahMencari"
+        style="text-align: center; color: #95a5a6; margin-top: 30px"
+      >
+        <p>Silakan masukkan nomor DO untuk melihat status pengiriman.</p>
+      </div>
+
+      <div v-else-if="hasilTracking">
+        <div style="background: #e1f5fe; padding: 15px; border-radius: 5px">
+          <h3>
+            Status:
+            <span style="color: #2980b9">{{ hasilTracking.status }}</span>
+          </h3>
+          <p>
+            <strong>Penerima:</strong> {{ hasilTracking.nama }} ({{
+            hasilTracking.nim }})
+          </p>
+          <p>
+            <strong>Ekspedisi:</strong> {{ hasilTracking.ekspedisi }} |
+            <strong>Tgl Kirim:</strong> {{ hasilTracking.tanggalKirim }}
+          </p>
+          <p>
+            <strong>Isi Paket:</strong> {{ getNamaPaket(hasilTracking.paket) }}
+          </p>
+        </div>
+
+        <h4>Riwayat Perjalanan:</h4>
+        <ul class="timeline">
+          <li v-for="(log, idx) in hasilTracking.perjalanan" :key="idx">
+            <strong>{{ log.waktu }}</strong><br />
+            {{ log.keterangan }}
+          </li>
+        </ul>
+      </div>
+
+      <div
+        v-else
+        class="alert"
+        style="background-color: #ffcdd2; border-color: #ef5350; color: #c62828"
+      >
+        <p>
+          <strong>Maaf!</strong> Nomor DO "<strong>{{ inputResi }}</strong>"
+          tidak ditemukan dalam sistem.
+        </p>
+      </div>
+    </div>
+
+    <script src="js/tracking-app.js"></script>
+  </body>
+</html>
