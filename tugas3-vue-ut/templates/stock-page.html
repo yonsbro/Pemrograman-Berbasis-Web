@@ -1,0 +1,70 @@
+<template id="tpl-stock-page">
+  <div>
+    <div class="stock-form-container"></div>
+
+    <div class="filters-sort">
+      <select v-model="filter.upbjj" @change="handleUpbjjChange">
+        <option value="">Semua UT-Daerah</option>
+        <option v-for="upbjj in upbjjs" :value="upbjj">{{ upbjj }}</option>
+      </select>
+
+      <select v-if="filter.upbjj" v-model="filter.kategori">
+        <option value="">Semua Kategori</option>
+        <option v-for="kategori in kategoris" :value="kategori">
+          {{ kategori }}
+        </option>
+      </select>
+
+      <label>
+        <input type="checkbox" v-model="filter.reorderOnly" />
+        Perlu Re-Order (Stok < Safety atau = 0)
+      </label>
+
+      <select v-model="sortBy">
+        <option value="judul">Urutkan: Judul</option>
+        <option value="qty">Urutkan: Stok</option>
+        <option value="harga">Urutkan: Harga</option>
+      </select>
+
+      <button @click="resetFilters">Reset Filter</button>
+    </div>
+
+    <table class="stock-table">
+      <thead>
+        <tr>
+          <th>Kode/Judul</th>
+          <th>Kategori</th>
+          <th>UT-Daerah</th>
+          <th>Rak</th>
+          <th>Harga</th>
+          <th>Stok (buah)</th>
+          <th>Safety (buah)</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in filteredAndSortedStock" :key="item.kode">
+          <td><strong>{{ item.kode }}</strong><br />{{ item.judul }}</td>
+          <td>{{ item.kategori }}</td>
+          <td>{{ item.upbjj }}</td>
+          <td>{{ item.lokasiRak }}</td>
+          <td>{{ formatRupiah(item.harga) }}</td>
+          <td>{{ item.qty }} buah</td>
+          <td>{{ item.safety }} buah</td>
+          <td>
+            <status-badge
+              :qty="item.qty"
+              :safety="item.safety"
+              :note-html="item.catatanHTML"
+            ></status-badge>
+          </td>
+          <td>
+            <button @click="editItem(item)">✏️ Edit</button>
+            <button @click="confirmDelete(item)">🗑️ Hapus</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>

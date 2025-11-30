@@ -1,0 +1,169 @@
+<div>
+  <h2>🚚 Tracking Delivery Order</h2>
+
+  <div class="filter-box" style="justify-content: center; background: #dbeaff">
+    <input
+      type="text"
+      v-model="searchQuery"
+      @keyup.enter="handleSearchEvent"
+      @keyup.esc="handleResetEvent"
+      placeholder="Cari No DO atau NIM... (Enter/Esc)"
+      style="width: 300px"
+    />
+    <button class="btn btn-primary" @click="cariDO">Cari</button>
+    <button class="btn btn-warning" @click="resetCari">Reset (Esc)</button>
+  </div>
+
+  <div
+    v-if="searchResult === 'invalid'"
+    class="status-warning badge"
+    style="display: block; text-align: center; padding: 10px; margin-top: 15px"
+  >
+    Masukkan minimal 5 karakter untuk pencarian.
+  </div>
+  <div
+    v-else-if="searchResult === 'notfound'"
+    class="status-danger badge"
+    style="display: block; text-align: center; padding: 10px; margin-top: 15px"
+  >
+    Nomor DO / NIM tidak ditemukan.
+  </div>
+  <div v-else-if="searchResult && Array.isArray(searchResult)">
+    <h3>Hasil Ditemukan: {{ searchResult.length }} DO</h3>
+    <div
+      v-for="doData in searchResult"
+      :key="doData.noDO"
+      style="
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      "
+    >
+      <div style="display: flex; justify-content: space-between">
+        <h3>
+          {{ doData.noDO }}
+          <span class="badge status-safe">{{ doData.status }}</span>
+        </h3>
+        <span>Tgl Kirim: {{ doData.tanggalKirim }}</span>
+      </div>
+      <p>
+        <strong>Penerima:</strong> {{ doData.nama }} ({{ doData.nim }}) |
+        <strong>Ekspedisi:</strong> {{ doData.ekspedisi }}
+      </p>
+      <p>
+        <strong>Paket:</strong> {{ doData.paket }} | <strong>Total:</strong> {{
+        formatRupiah(doData.total) }}
+      </p>
+
+      <h4>Riwayat Perjalanan:</h4>
+      <ul class="history-list">
+        <li v-for="log in doData.perjalanan">
+          <small>{{ log.waktu }}</small> - <strong>{{ log.keterangan }}</strong>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div v-else style="text-align: center; color: #95a5a6; margin-top: 30px">
+    <p>Silakan masukkan Nomor DO atau NIM untuk melacak status pengiriman.</p>
+  </div>
+
+  <hr />
+
+  <div
+    style="
+      background: #e6f7e8;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+    "
+  >
+    <h3>➕ Input Delivery Order Baru</h3>
+    <div
+      style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px"
+    >
+      <div>
+        <label>NIM Mahasiswa</label>
+        <input type="text" v-model.trim="newDO.nim" required />
+      </div>
+      <div>
+        <label>Nama Mahasiswa</label>
+        <input type="text" v-model.trim="newDO.nama" required />
+      </div>
+      <div>
+        <label>Ekspedisi</label>
+        <select v-model="newDO.ekspedisi" required>
+          <option value="">Pilih Ekspedisi</option>
+          <option v-for="p in pengirimanList" :value="p.nama">
+            {{ p.nama }}
+          </option>
+        </select>
+      </div>
+      <div>
+        <label>Pilih Paket Bahan Ajar</label>
+        <select v-model="newDO.paketKode" @change="updatePaketDetail" required>
+          <option value="">-- Pilih Paket (Kode & Nama) --</option>
+          <option v-for="p in paketList" :value="p.kode">
+            {{ p.kode }} - {{ p.nama }}
+          </option>
+        </select>
+        <div
+          v-show="selectedPaketDetail"
+          style="
+            margin-top: 5px;
+            font-size: 0.9em;
+            background: white;
+            padding: 5px;
+            border-left: 3px solid #007bff;
+          "
+        >
+          <strong>Isi Paket:</strong> {{ selectedPaketDetail ?
+          selectedPaketDetail.isi.join(', ') : '' }}<br />
+          <strong>Total Harga:</strong> {{ selectedPaketDetail ?
+          formatRupiah(selectedPaketDetail.harga) : '' }}
+        </div>
+      </div>
+    </div>
+    <br />
+    <button class="btn btn-success" @click="simpanDOBaru">
+      Buat DO Baru (Auto Generate No DO)
+    </button>
+  </div>
+
+  <div
+    style="
+      background: #f0f7ff;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    "
+  >
+    <h3>🚀 Tambah Status Perjalanan DO</h3>
+    <div style="display: flex; gap: 15px">
+      <div style="flex-grow: 1">
+        <label>Pilih Nomor DO</label>
+        <select v-model="progressDO" required style="width: 100%">
+          <option value="">-- Pilih DO --</option>
+          <option v-for="t in trackingData" :value="t.noDO">
+            {{ t.noDO }} ({{ t.nama }})
+          </option>
+        </select>
+      </div>
+      <div style="flex-grow: 3">
+        <label>Keterangan Perjalanan</label>
+        <input
+          type="text"
+          v-model.trim="progressKeterangan"
+          placeholder="Contoh: Barang tiba di Gudang Surabaya"
+          required
+          style="width: 100%"
+        />
+      </div>
+      <div style="align-self: flex-end">
+        <button class="btn btn-primary" @click="simpanProgress">
+          Tambah Progress
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

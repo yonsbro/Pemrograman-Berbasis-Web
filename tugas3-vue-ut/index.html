@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistem Bahan Ajar UT - Tugas Praktik 3</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  </head>
+  <body>
+    <div id="app" class="app-container">
+      <h1>Sistem Pemesanan Bahan Ajar Universitas Terbuka</h1>
+
+      <nav class="tabs">
+        <button
+          :class="{ active: currentTab === 'stok' }"
+          @click="setTab('stok')"
+        >
+          🏠 Stok Bahan Ajar
+        </button>
+        <button
+          :class="{ active: currentTab === 'tracking' }"
+          @click="setTab('tracking')"
+        >
+          🚚 Tracking DO
+        </button>
+        <button
+          :class="{ active: currentTab === 'order' }"
+          @click="setTab('order')"
+        >
+          🛒 Pesanan Baru
+        </button>
+      </nav>
+
+      <hr />
+
+      <main class="tab-content">
+        <div v-if="currentTab === 'stok'">
+          <h2>Daftar Stok Bahan Ajar</h2>
+          <ba-stock-page
+            :upbjjs="upbjjList"
+            :kategoris="kategoriList"
+            :initial-stock="rawStock"
+            :format-rupiah="formatRupiah"
+          >
+          </ba-stock-page>
+        </div>
+
+        <div v-if="currentTab === 'tracking'">
+          <h2>Tracking Delivery Order</h2>
+          <ba-tracking-page
+            :initial-tracking="rawTracking"
+            :next-do="nextDoNumber"
+            :paket-list="paketList"
+            :pengiriman-list="pengirimanList"
+            :format-rupiah="formatRupiah"
+            :format-date="formatDate"
+          >
+          </ba-tracking-page>
+        </div>
+
+        <div v-if="currentTab === 'order'">
+          <h2>Formulir Pemesanan Baru</h2>
+          <ba-order-form></ba-order-form>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
